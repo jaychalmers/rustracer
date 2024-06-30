@@ -45,3 +45,25 @@ pub mod vector {
 	*/
 }
 
+#[cfg(test)]
+mod tests {
+	use crate::vector::*;
+	
+	#[test]
+	fn sub() {
+		let a = Vec3 {
+			x: 10.5,
+			y: 20.8,
+			z: 30.1
+		};
+		let b = Vec3 {
+			x: 5.5,
+			y: 6.1,
+			z: 7.6
+		};
+		let res = a - b;
+		assert_eq!(res.x, 5.);
+		assert_eq!(res.y, 14.700000000000001);
+		assert_eq!(res.z, 22.5);
+	}
+}

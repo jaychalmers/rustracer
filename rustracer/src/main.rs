@@ -1,4 +1,5 @@
 use rustracer::vector::Vec3;
+use std::io;
 
 #[derive(Copy,Clone)]
 enum Color {
@@ -9,7 +10,7 @@ enum Color {
 }
 
 impl Color {
-	fn toRGB(&self) -> Vec3<u8> {
+	fn to_rgb(&self) -> Vec3<u8> {
 		match *self {
 			Color::White => Vec3::new(255,255,255),
 			Color::Red => Vec3::new(255,0,0),
@@ -66,45 +67,47 @@ fn main() {
 	println!("{canvas_width} {canvas_height}");
 	println!("255");
 	
-	for x in c_w_start..c_w_end {
-		for y in c_h_start..c_h_end {
+	let mut discard = String::new();
+	
+	for y in c_h_start..c_h_end {
+		for x in c_w_start..c_w_end {
+			
 			let direction = canvas_to_viewport(x,y,viewport_width,viewport_height,viewport_distance,canvas_width,canvas_height);
 			let color = trace_ray(&origin, &direction, 1, infinity, &objects[..]);
-			
+						
 			print_color(&color);
+			
+			//let _ = io::stdin().read_line(&mut discard);
 		}
 	}
 }
 
-fn write_color(color: Vec3<i32>) {
-	println!("{0} {1} {2}", color.x, color.y, color.z);
-}
-
 fn print_color(color: &Color) {
-	let color = color.toRGB();
+	let color = color.to_rgb();
 	println!("{0} {1} {2}", color.x, color.y, color.z);
 }
 
-// make enumerator?
 fn get_canvas_boundaries(width: i32, height: i32) -> (i32, i32, i32, i32) {
 	let canvas_width_end = width / 2;
 	let canvas_width_start = canvas_width_end * -1;
 	let canvas_height_end = height / 2;
-	let canvas_height_start = canvas_height_end / 2;
+	let canvas_height_start = canvas_height_end * -1;
 	
 	return (canvas_width_start, canvas_width_end, canvas_height_start, canvas_height_end);
 }
 
-fn canvas_to_viewport(x: i32, y: i32, vw: f64, vh: f64, vd: f64, cw: i32, ch: i32) -> Vec3<f64> {
+fn canvas_to_viewport(cx: i32, cy: i32, vw: f64, vh: f64, vd: f64, cw: i32, ch: i32) -> Vec3<f64> {
 	
 	let width_scalar = vw / cw as f64;
-	let height_scalar = vh / cw as f64;
+	let height_scalar = vh / ch as f64;
 	
-	return Vec3 {
-		x: x as f64 * width_scalar,
-		y: y as f64 * height_scalar,
+	let direction = Vec3 {
+		x: cx as f64 * width_scalar,
+		y: cy as f64 * height_scalar,
 		z: vd
 	};
+		
+	direction
 }
 
 fn is_closest_intersection(t: f64, start: i32, end: i32, closest_intersection: f64) -> bool {
@@ -158,7 +161,7 @@ fn intersect_ray_sphere (origin: &Vec3<f64>, direction: &Vec3<f64>, sphere: &Sph
 	);
 }
 
-fn render() {}
+//fn render() {}
     // Image
 	/*
 	let aspect_ratio = 16.0 / 9.0;
